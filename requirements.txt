@@ -1,0 +1,10 @@
+requests
+langchain-google-vertexai
+langchain-community
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+vertexai
+streamlit
+pandas
