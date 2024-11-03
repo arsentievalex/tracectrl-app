@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Particles.js</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      overflow: hidden;
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: -1; /* Send the animation to the back */
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 50px;
+      font-weight: 400;
+      color: #ccc;
+    }
+
+    .highlight {
+  color: #4CAF50;
+  }
+
+    #changing-text {
+    white-space: nowrap;
+    overflow: hidden;
+    color: #77dd77;
+    animation: blink-caret 0.75s step-end infinite;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="content">
+    <h1>Your Data, Your Right to <span id="changing-text"></span></h1>
+    <h2>Take control over your personal data with TraceCtrl</h2>
+  </div>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 300,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#ffffff"
+        },
+        "shape": {
+          "type": "edge",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 5
+          }
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": false,
+          "anim": {
+            "enable": false,
+            "speed": 1,
+            "opacity_min": 0.2,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 2,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 100,
+          "color": "#77dd77",
+          "opacity": 0.22,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 0.2,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": true,
+          "attract": {
+            "enable": false,
+            "rotateX": 600,
+            "rotateY": 1200
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "grab"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 100,
+            "line_linked": {
+              "opacity": 1
+            }
+          },
+          "bubble": {
+            "distance": 400,
+            "size": 2,
+            "duration": 2,
+            "opacity": 0.5,
+            "speed": 1
+          },
+          "repulse": {
+            "distance": 200,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 2
+          },
+          "remove": {
+            "particles_nb": 3
+          }
+        }
+      },
+      "retina_detect": true
+    });
+
+   const phrases = ['Access', 'Erase', 'Modify'];
+        let currentPhrase = 0;
+        let currentCharacter = 0;
+        let htmlElement = document.getElementById('changing-text');
+        let forward = true;
+        let intervalId = null;
+        let typingSpeed = 200;
+        let delayBeforeDelete = 1000;
+
+        function typeWriter() {
+            if (forward) {
+                if (currentCharacter < phrases[currentPhrase].length) {
+                    currentCharacter++;
+                    htmlElement.textContent = phrases[currentPhrase].substr(0, currentCharacter);
+                } else {
+                    forward = false;
+                    clearInterval(intervalId);
+                    setTimeout(() => {
+                        intervalId = setInterval(typeWriter, typingSpeed);
+                    }, delayBeforeDelete); // Wait before starting to delete
+                }
+            } else {
+                if (currentCharacter > 0) {
+                    currentCharacter--;
+                    htmlElement.textContent = phrases[currentPhrase].substr(0, currentCharacter);
+                } else {
+                    forward = true;
+                    currentPhrase = (currentPhrase + 1) % phrases.length; // Move to the next phrase
+                }
+            }
+        }
+
+        intervalId = setInterval(typeWriter, typingSpeed);
+  </script>
+</body>
+</html>
