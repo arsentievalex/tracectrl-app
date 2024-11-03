@@ -9,3 +9,4 @@ vertexai
 streamlit
 pandas
 pyjwt
+extra-streamlit-components
