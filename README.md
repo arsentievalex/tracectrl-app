@@ -34,14 +34,8 @@
 3. **Hints System:** The AI can offer hints based on the player’s query history, helping them narrow down the suspects.
 4. **Victory:** The game ends when the player correctly identifies the murderer.
 
-## Llama-Index Workflow
 
-Below is representation of the Llama-Index workflow that is used to orchestrate multiple LLM calls and ingestion of temporary game data into TiDB Serverless.
-
-<img src="https://i.postimg.cc/7LpS7xgj/Llama-Index-Workflow.png"/>
-
-
-[Watch the demo video on YouTube](https://youtu.be/IEwo6FUG1PY)
+[Watch the demo video on YouTube](https://youtu.be/GIHCocx6UxQ)
 
 
 ## Getting Started
