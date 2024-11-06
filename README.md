@@ -4,7 +4,7 @@
 
 ## Architecture
 
-<img src="https://i.postimg.cc/G34Zdz22/Architecture.png"/>
+<img src="https://i.postimg.cc/zDVpcTk7/tracectrl-architecture.png"/>
 
 ## Features
 
