@@ -20,39 +20,34 @@
 
 
 ## Tech Stack
-
-- **TiDB Serverless:** Stores AI-generated temporary game data, including tables for Victim, Suspects, Evidence, Alibis, and more.
-- **TiDB VectorSearch:** Ensures the AI generates valid SQL queries by referencing schema embeddings stored in the vs_game_schema table.
-- **Llama-Index:** Manages the workflow for generating and validating game data, including self-healing processes.
-- **Gemini 1.5 Flash:** GPT-4o mini model generates unique game stories, data and personalized hints for a player.
-- **Streamlit:** Provides the user interface.
-
-## How It Works
-
-1. **Story Generation:** The AI generates a unique murder mystery story and populates the database with relevant data.
-2. **Data Exploration:** Players explore the data by running SQL queries to piece together the clues and identify the murderer.
-3. **Hints System:** The AI can offer hints based on the player’s query history, helping them narrow down the suspects.
-4. **Victory:** The game ends when the player correctly identifies the murderer.
-
+- **Google API Client:** Utilizes the Gmail API to read and send emails on the user's behalf.
+- **Google Auth:** Manages user authentication and grants access to required scopes.
+- **Logo.Dev:** Provides an endpoint that returns a company logo based on the website.
+- **FireCrawl:** Retrieves the URL of a website's privacy policy from its base URL.
+- **Gemini 1.5 Flash via Vertex AI:** Extracts company websites and categorizes email interaction types. Analyzes privacy policies to extract GDPR email addresses.
+- **Streamlit:** Serves as the user interface framework.
+- **Docker:** Enables containerization for simplified deployment.
+- **Google Container Registry:** Hosts container images.
+- **Google Cloud Run:** Deploys the app in a scalable environment.
 
 [Watch the demo video on YouTube](https://youtu.be/GIHCocx6UxQ)
 
 
 ## Getting Started
 
-To set up and run QueryHunt locally:
+To set up and run TraceCtrl locally:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/arsentievalex/queryhunt-game.git
+   git clone https://github.com/arsentievalex/tracectrl-app.git
 
 2. **Install the required packages:**
    ```bash
-   cd queryhunt-game pip install -r requirements.txt
+   cd tracectrl-app pip install -r requirements.txt
 
 3. **Replace the following secrets with your credentials:**
    ```bash
-   st.secrets["OPENAI_API_KEY"], st.secrets["TIDB_CONNECTION_URL"], st.secrets["TIDB_USER"], st.secrets["TIDB_PASSWORD"]
+   credentials.json, service_acc.json, FIRECRAWL_API_KEY, LOGODEV_API_KEY
 
 4. **Run entrypoint app.py:**
    ```bash
