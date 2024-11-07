@@ -64,28 +64,17 @@ def display_options():
     day_range, ignored_categories = configure_advanced_options()
 
     if scan_button:
+        
         # for demo purposes, load sample emails
         email_data = read_json('gemini_processed_emails.json')
+        
         # email_data = process_emails(gmail_service, day_range, ignored_categories)
 
-        display_scan_progress()
         logo_url_list, classification_data = extract_email_data(email_data)
 
         display_results(logo_url_list, classification_data)
 
         run_bot()
-
-def display_scan_progress():
-    """Simulate scanning progress for demo purposes."""
-    st.session_state['progress_bar'] = st.progress(0, text="Fetching emails...")
-    time.sleep(4)
-    st.session_state['progress_bar'].progress(25, text="Analyzing email content...")
-    time.sleep(4)
-    st.session_state['progress_bar'].progress(50, text="Looking for companies...")
-    time.sleep(3)
-    st.session_state['progress_bar'].progress(99, text="Finishing...")
-    time.sleep(3)
-    st.session_state['progress_bar'].empty()
 
 def extract_email_data(email_data):
     """Process and extract email data for display."""
