@@ -21,6 +21,18 @@ import time
 
 
 def get_first_working_url(json_data):
+    """
+    Retrieve the first working URL from a list in a JSON response.
+
+    Parameters:
+        json_data (dict): JSON data containing a "success" status and a list of URLs under the "links" key.
+
+    Returns:
+        str: The first URL that returns a successful HTTP response (status code 200).
+
+    Raises:
+        ValueError: If the operation is unsuccessful, no URLs are provided, or no valid URL is found.
+    """
     # Check if "success" key exists and its value is True
     if not json_data.get('success', False):
         raise ValueError("The operation was not successful")
@@ -46,6 +58,15 @@ def get_first_working_url(json_data):
 
 
 def return_privacy_url(base_url):
+    """
+     Query an API to retrieve URLs related to privacy information for a given website.
+
+     Parameters:
+         base_url (str): The base URL of the website for which to retrieve privacy-related links.
+
+     Returns:
+         requests.Response: The API response object containing privacy URLs.
+     """
     url = "https://api.firecrawl.dev/v1/map"
 
     payload = {
@@ -63,6 +84,15 @@ def return_privacy_url(base_url):
 
 
 def extract_email(privacy_url):
+    """
+    Extract the data privacy or GDPR contact email address from a privacy URL.
+
+    Parameters:
+        privacy_url (str): The URL of the privacy page to analyze.
+
+    Returns:
+        str: The extracted email address if found; otherwise, "No email available".
+    """
     url = [privacy_url]
     loader = UnstructuredURLLoader(urls=url)
     data = loader.load()
@@ -91,6 +121,15 @@ def extract_email(privacy_url):
 
 # function to check if url is working
 def check_url(url):
+    """
+    Check if a URL is accessible and returns a successful HTTP status.
+
+    Parameters:
+        url (str): The URL to check.
+
+    Returns:
+        bool: True if the URL returns a 200 status code, False otherwise.
+    """
     try:
         response = requests.get(url)
         return response.status_code == 200
@@ -100,12 +139,31 @@ def check_url(url):
 
 # read json file and transform to dictionary
 def read_json(file_path):
+    """
+    Read a JSON file and return its contents as a dictionary.
+
+    Parameters:
+        file_path (str): The path to the JSON file.
+
+    Returns:
+        dict: The data from the JSON file as a dictionary.
+    """
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
 
 
 def compose_logo_url(logo_url_set, email_info):
+    """
+    Generate a logo URL based on company website information and add it to a set if valid.
+
+    Parameters:
+        logo_url_set (set): A set to store valid logo URLs.
+        email_info (dict): Dictionary containing email interaction information, including a JSON-formatted "Interaction Type".
+
+    Returns:
+        None
+    """
     classification = json.loads(email_info["Interaction Type"])
     website = classification.get("website", "")
 
@@ -120,6 +178,16 @@ def compose_logo_url(logo_url_set, email_info):
 
 
 def compose_df(classification_data, email_info):
+    """
+    Extract company details from email interaction data and append it as a dictionary to a list.
+
+    Parameters:
+        classification_data (list): A list to store classification dictionaries with company details.
+        email_info (dict): Dictionary containing email interaction data, including a JSON-formatted "Interaction Type".
+
+    Returns:
+        None
+    """
     interaction_str = email_info.get("Interaction Type", "{}")
 
     # Parse the classification JSON string into a dictionary
@@ -137,10 +205,17 @@ def compose_df(classification_data, email_info):
         "Website": website
     })
 
-
-
 @st.cache_data
 def display_random_logos(image_urls):
+    """
+    Display a grid of random logos with varying sizes in Streamlit.
+
+    Parameters:
+        image_urls (list): A list of image URLs to display.
+
+    Returns:
+        None
+    """
     num_columns = 7  # Number of columns to display
     random.shuffle(image_urls)  # Shuffle the images to randomize their order
 
@@ -168,6 +243,15 @@ def display_random_logos(image_urls):
 
 @st.fragment
 def display_df(df):
+    """
+    Display an editable dataframe in Streamlit, allowing users to select and interact with company data.
+
+    Parameters:
+        df (pd.DataFrame): The dataframe containing company information, including "Company Name", "Interaction Type", and "Website" columns.
+
+    Returns:
+        pd.DataFrame: A subset of the dataframe with only the selected rows.
+    """
     # drop duplicate companies
     df.drop_duplicates(subset=['Company Name'], inplace=True)
 
@@ -202,6 +286,18 @@ def display_df(df):
 
 @st.dialog("Email Preview")
 def preview_email(email, subject, body, service):
+    """
+    Display a dialog in Streamlit for previewing and sending an email.
+
+    Parameters:
+        email (str): The recipient's email address.
+        subject (str): The subject of the email.
+        body (str): The body content of the email.
+        service (googleapiclient.discovery.Resource): The Google API service instance used to send the email.
+
+    Returns:
+        None
+    """
     st.text_input("To", email)
     st.text_input("Subject", subject)
     st.text_area(label="Body", value=body, label_visibility='hidden', height=300)
@@ -221,7 +317,13 @@ def preview_email(email, subject, body, service):
 
 
 def get_email_template():
-    # Define the email templates for different GDPR requests
+    """
+    Retrieve predefined email templates for different types of GDPR requests.
+
+    Returns:
+        dict: A dictionary with GDPR request types ("Request Data", "Modify Data", "Erase Data") as keys and
+              their corresponding email subject and body as values.
+    """
     email_template = {
         "Request Data": {
             "subject": "GDPR Data Access Request",
@@ -277,6 +379,12 @@ def get_email_template():
 
 
 def google_authenticate():
+    """
+    Authenticate the user with Google and return an authentication object.
+
+    Returns:
+        Authenticate: An authentication object with session management.
+    """
     authenticator = Authenticate(
         secret_credentials_path='credentials.json',
         cookie_name='my_cookie_name',
@@ -290,6 +398,12 @@ def google_authenticate():
 
 
 def build_gmail_service():
+    """
+    Build and return an authenticated Gmail API service instance using stored credentials.
+
+    Returns:
+        googleapiclient.discovery.Resource: The Gmail API service instance.
+    """
     if "credentials" in st.session_state:
         credentials_info = json.loads(st.session_state["credentials"])
         credentials = Credentials.from_authorized_user_info(credentials_info)
@@ -305,8 +419,20 @@ def build_gmail_service():
         return gmail_service
 
 
-# Function to create an email message
 def create_message(sender, to, subject, message_text):
+    """
+    Create an email message in a format suitable for the Gmail API.
+
+    Parameters:
+        sender (str): The email address of the sender.
+        to (str): The recipient's email address.
+        subject (str): The subject of the email.
+        message_text (str): The body of the email.
+
+    Returns:
+        dict: A dictionary containing the raw, base64-encoded message.
+    """
+
     message = MIMEText(message_text)
     message['to'] = to
     message['from'] = sender
@@ -315,8 +441,19 @@ def create_message(sender, to, subject, message_text):
     return {'raw': raw_message}
 
 
-# Function to send the email using Gmail API
 def send_message(service, user_id, message):
+    """
+    Send an email message using the Gmail API.
+
+    Parameters:
+        service (googleapiclient.discovery.Resource): The Gmail API service instance.
+        user_id (str): The sender's user ID, typically "me" to indicate the authenticated user.
+        message (dict): The email message created by `create_message`.
+
+    Returns:
+        dict: The response from the Gmail API containing message details if successful.
+        None: If an error occurred during sending.
+    """
     try:
         message = service.users().messages().send(userId=user_id, body=message).execute()
         print(f"Message Id: {message['id']}")
@@ -326,8 +463,20 @@ def send_message(service, user_id, message):
         return None
 
 
-# Function to fetch emails for a specific category and date range
 def fetch_emails_by_label(service, label_id, days, num_emails=10):
+    """
+    Fetch emails from a specified category within a given date range.
+
+    Parameters:
+        service (googleapiclient.discovery.Resource): The Gmail API service instance.
+        label_id (str): The Gmail label ID to filter emails by category (e.g., 'CATEGORY_PROMOTIONS').
+        days (int): The number of past days to include in the date range.
+        num_emails (int, optional): The maximum number of emails to fetch. Defaults to 10.
+
+    Returns:
+        list: A list of email messages that match the specified category and date range.
+    """
+
     # Calculate the start date (n days ago) and the end date (tomorrow)
     start_date = (datetime.now() - timedelta(days=days - 1)).strftime('%Y/%m/%d')
     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y/%m/%d')
@@ -347,8 +496,19 @@ def fetch_emails_by_label(service, label_id, days, num_emails=10):
     return messages
 
 
-# Function to fetch emails from multiple categories and date range
+
 def fetch_emails(service, days, num_emails=10):
+    """
+    Fetch emails from multiple categories within a specified date range.
+
+    Parameters:
+        service (googleapiclient.discovery.Resource): The Gmail API service instance.
+        days (int): The number of past days to include in the date range.
+        num_emails (int, optional): The maximum number of emails to fetch from each category. Defaults to 10.
+
+    Returns:
+        list: A combined list of email messages from multiple categories within the specified date range.
+    """
     # Categories to fetch from
     categories = ['CATEGORY_PROMOTIONS', 'CATEGORY_UPDATES']
 
@@ -362,8 +522,24 @@ def fetch_emails(service, days, num_emails=10):
     return combined_emails
 
 
-# Read and decode an email's content, and include the date it was sent
 def get_email_content(service, message_id):
+    """
+        Retrieve the content, subject, sender, and date of a specified email message.
+
+        Parameters:
+            service (googleapiclient.discovery.Resource): The Gmail API service instance.
+            message_id (str): The ID of the email message to retrieve.
+
+        Returns:
+            tuple: A tuple containing:
+                - subject (str or None): The subject of the email.
+                - sender (str or None): The sender's email address.
+                - date (str or None): The date the email was sent, formatted as "YYYY-MM-DD".
+                - email_content (str or None): The decoded plain text content of the email.
+
+        Raises:
+            ValueError: If no content is found in the email.
+        """
     try:
         message = service.users().messages().get(userId='me', id=message_id).execute()
         payload = message.get('payload', {})
@@ -413,8 +589,28 @@ def get_email_content(service, message_id):
         return None, None, None, None
 
 
-# Classify email content and extract company info using Gemini
 def classify_email_with_gemini(email_content):
+    """
+    Classify an email into interacted or not interacted categories and extract relevant company information.
+
+    Parameters:
+        email_content (str): The text content of the email to classify.
+
+    Returns:
+        dict: A JSON object containing:
+            - company_name (str): The name of the company inferred from the email content.
+            - interaction_type (str): The classification of the email as either 'interacted' or 'not interacted'.
+            - website (str): The inferred website of the company, if available.
+
+    Description:
+        This function uses the Gemini AI model to classify emails based on user engagement and interaction.
+        Emails are categorized into 'interacted' (triggered by a user action) or 'not interacted' (not user-triggered, e.g., marketing).
+        Additionally, the function attempts to infer the company name and website from the email content, if they are not explicitly stated.
+
+    Raises:
+        Exception: If there is an issue with the classification or model response.
+    """
+
     SYSTEM_INSTRUCTIONS = """
     You are a helpful AI that helps classify emails and extract relevant information.
 
@@ -460,8 +656,31 @@ def classify_email_with_gemini(email_content):
     return response.text
 
 
-# Main function to fetch, classify, and return emails as a dictionary
 def process_emails(service, days, ignored_categories):
+    """
+    Process emails by fetching, analyzing, and classifying them into interacted or not interacted categories.
+
+    Parameters:
+        service (googleapiclient.discovery.Resource): The Gmail API service object for accessing the user's emails.
+        days (int): The number of days from which to fetch and process emails.
+        ignored_categories (list of str): A list of email categories to ignore during processing.
+
+    Returns:
+        dict: A dictionary where each key is an email's message ID, and each value is a dictionary containing:
+            - "Subject" (str): The email's subject line.
+            - "Sender" (str): The sender's email address.
+            - "Date" (str): The date of the email.
+            - "Classification" (dict): The classification result from Gemini, including company name, interaction type, and website.
+
+    Description:
+        This function retrieves emails for a specified time range, extracts content, and uses Gemini AI to classify each email.
+        It updates the UI with a progress bar during processing and implements retry logic for rate limiting.
+        Emails with missing content or sender information are skipped, and any ignored categories are not processed.
+
+    Raises:
+        Exception: For rate-limit errors (429), the function pauses and retries after 60 seconds.
+                   Other exceptions are logged, and processing for the email in question is skipped.
+    """
 
     st.session_state['progress_bar'] = st.progress(0, text="Fetching emails...")
     messages = fetch_emails(service, days)
@@ -513,5 +732,7 @@ def process_emails(service, days, ignored_categories):
 
     # get rid of progress bar
     st.session_state['progress_bar'].empty()
+
+    st.write(email_data)
 
     return email_data
